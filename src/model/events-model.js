@@ -11,4 +11,3 @@ export default class EventsModel {
     return this.#events;
   }
 }
-

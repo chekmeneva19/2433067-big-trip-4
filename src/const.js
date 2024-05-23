@@ -4,7 +4,6 @@ const DEFAULT_TYPE = 'flight';
 const TYPES = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
 const TITLES = ['Add luggage', 'Switch to comfort class', 'Add meal', 'Choose seats', 'Travel by train'];
 const CITIES = ['Amsterdam', 'Chamonix', 'Geneva'];
-
 const DESCRIPTION = [
   'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
   'Cras aliquet varius magna, non porta ligula feugiat eget.',
@@ -17,7 +16,6 @@ const DESCRIPTION = [
   'Aliquam erat volutpat.',
   'Nunc fermentum tortor ac porta dapibus.',
   'In rutrum ac purus sit amet tempus.'];
-
 const Price = {
   MAX: 10,
   MIN: 1000
@@ -47,28 +45,4 @@ const Duration = {
   MIN: 59
 };
 
-const FilterType = {
-  EVERYTHING: 'everything',
-  FUTURE: 'future',
-  PRESENT: 'present',
-  PAST: 'past',
-};
-
-const Mode = {
-  DEFAULT: 'DEFAULT',
-  EDITING: 'EDITING',
-};
-
-export {EVENT_COUNT,
-  TYPES,
-  TITLES,
-  DESCRIPTION,
-  Price,
-  CITIES,
-  POINT_EMPTY,
-  DESTINATION_COUNT,
-  Duration,
-  MSEC_IN_HOUR,
-  MSEC_IN_DAY,
-  FilterType,
-  Mode};
+export {EVENT_COUNT, TYPES, TITLES, DESCRIPTION, Price, CITIES, POINT_EMPTY, DESTINATION_COUNT, Duration, MSEC_IN_HOUR, MSEC_IN_DAY};

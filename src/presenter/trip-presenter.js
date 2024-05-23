@@ -1,25 +1,19 @@
-import { render, RenderPosition } from '../framework/render.js';
-import { updateItem } from '../utils/common.js';
+import { render, replace } from '../framework/render.js';
 import TripEventsView from '../view/trip-events-view.js';
 import SortView from '../view/sort-view.js';
-import EventPresenter from './event-presenter.js';
-import NoEventView from '../view/no-event-view.js';
+import EventEditView from '../view/event-edit-view.js';
+import EventView from '../view/event-view.js';
 
 export default class TripPresenter {
-  #eventListComponent = new TripEventsView();
-  #sortComponent = new SortView();
-  #noEventComponent = new NoEventView();
-
-  #tripContainer = null;
+  #tripEventsComponent = new TripEventsView();
+  #container = null;
   #destinationsModel = null;
   #offersModel = null;
   #eventsModel = null;
   #tripEvents = null;
 
-  #eventPresenters = new Map();
-
-  constructor({tripContainer, destinationsModel, offersModel, eventsModel}) {
-    this.#tripContainer = tripContainer;
+  constructor({container, destinationsModel, offersModel, eventsModel}) {
+    this.#container = container;
     this.#destinationsModel = destinationsModel;
     this.#offersModel = offersModel;
     this.#eventsModel = eventsModel;
@@ -28,58 +22,55 @@ export default class TripPresenter {
   init() {
     this.#tripEvents = [...this.#eventsModel.get()];
 
-    this.#renderTrip();
-  }
+    render(new SortView(), this.#container);
+    render(this.#tripEventsComponent, this.#container);
 
-  #renderTrip() {
-    if (this.#tripEvents.length === 0) {
-      this.#renderNoEvents();
-      return;
-    }
-
-    this.#renderSort();
-    this.#renderEventContainer();
-    this.#renderEvents();
-  }
-
-  #renderEventContainer() {
-    render(this.#eventListComponent, this.#tripContainer);
-  }
-
-  #renderSort() {
-    render(this.#sortComponent, this.#tripContainer, RenderPosition.AFTERBEGIN);
-  }
-
-  #renderNoEvents() {
-    render(this.#noEventComponent, this.#tripContainer, RenderPosition.AFTERBEGIN);
-  }
-
-  #handleEventChange = (updatedEvent) => {
-    this.#tripEvents = updateItem(this.#tripEvents, updatedEvent);
-    this.#eventPresenters.get(updatedEvent.id).init(updatedEvent);
-  };
-
-  #handleModeChange = () => {
-    this.#eventPresenters.forEach((presenter) => presenter.resetView());
-  };
-
-  #renderEvents() {
     for (let i = 0; i < this.#tripEvents.length; i++) {
       this.#renderEvent(this.#tripEvents[i]);
     }
   }
 
   #renderEvent(event) {
-    const eventPresenter = new EventPresenter({
-      eventListContainer: this.#eventListComponent,
-      destinationsModel: this.#destinationsModel,
-      offersModel: this.#offersModel,
-      onDataChange: this.#handleEventChange,
-      onModeChange: this.#handleModeChange,
+    const escKeyDownHandler = (evt) => {
+      if (evt.key === 'Escape') {
+        evt.preventDefault();
+        replaceEditorToEvent();
+        document.removeEventListener('keydown', escKeyDownHandler);
+      }
+    };
+
+    const eventComponent = new EventView({
+      event,
+      eventDestination: this.#destinationsModel.getById(event.destination),
+      eventOffers: this.#offersModel.getByType(event.type),
+      onRollupClick: () => {
+        replaceEventToEditor();
+        document.addEventListener('keydown', escKeyDownHandler);
+      }
     });
 
-    eventPresenter.init(event);
-    this.#eventPresenters.set(event.id, eventPresenter);
+    const eventEditComponent = new EventEditView({
+      event,
+      eventDestination: this.#destinationsModel.getById(event.destination),
+      eventOffers: this.#offersModel.getByType(event.type),
+      onEditSubmit: () => {
+        replaceEditorToEvent();
+        document.removeEventListener('keydown', escKeyDownHandler);
+      },
+      onResetClick: () => {
+        replaceEditorToEvent();
+        document.removeEventListener('keydown', escKeyDownHandler);
+      }
+    });
+
+    function replaceEventToEditor() {
+      replace(eventEditComponent, eventComponent);
+    }
+
+    function replaceEditorToEvent() {
+      replace(eventComponent, eventEditComponent);
+    }
+
+    render(eventComponent, this.#tripEventsComponent.element);
   }
 }
-

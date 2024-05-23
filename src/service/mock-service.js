@@ -2,7 +2,7 @@ import { mockDestinations } from '../mock/destinations.js';
 import { mockOffers } from '../mock/offers.js';
 import { generateEvent } from '../mock/events.js';
 import { EVENT_COUNT, TYPES } from '../const.js';
-import { getRandomArrayElement, getRandomInteger } from '../utils/common.js';
+import { getRandomArrayElement, getRandomInteger } from '../utils.js';
 
 export default class MockService {
   #destinations = null;
